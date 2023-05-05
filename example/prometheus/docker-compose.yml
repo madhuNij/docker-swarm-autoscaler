@@ -6,6 +6,12 @@ services:
     ports:
       - "8080:8080"
 
+  #web:
+  #  image: generate_load:latest
+  #  ports:
+  #    - "8081:8081"
+
+
   prometheus:
     image: quay.io/prometheus/prometheus:v2.0.0
     ports:
@@ -14,6 +20,21 @@ services:
     configs:
       - source: prometheus.yml
         target: /etc/prometheus/prometheus.yml
+
+
+  cadvisor:
+    image: google/cadvisor:v0.33.0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    deploy:
+      mode: global
+    command: 
+      - --enable_load_reader=true
+
 
   autoscaler:
     image: docker-swarm-autoscaler:latest
@@ -27,6 +48,7 @@ services:
       placement:
         constraints:
           - node.role == manager
+  
 
 configs:
   prometheus.yml:
