@@ -1,16 +1,21 @@
 version: "3.4"
 
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
+
+
+
 services:
+  # web:
+  #   image: endeepak/simple-web-prometheus
+  #   ports:
+  #     - "8080:8080"
+
   web:
-    image: endeepak/simple-web-prometheus
-    ports:
-      - "8080:8080"
-
-  #web:
-  #  image: generate_load:latest
-  #  ports:
-  #    - "8081:8081"
-
+   image: mnijagal/generate_load:latest
+   ports:
+     - "8080:8080"
 
   prometheus:
     image: quay.io/prometheus/prometheus:v2.0.0
@@ -20,7 +25,46 @@ services:
     configs:
       - source: prometheus.yml
         target: /etc/prometheus/prometheus.yml
+    volumes:
+      - ./:/etc/prometheus/
+      - prometheus_data:/prometheus
+    links:
+      - cadvisor:cadvisor
+    depends_on:
+      - cadvisor
+  
+  node-exporter:
+    image: prom/node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - --collector.filesystem.ignored-mount-points
+      - '^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)'
+    ports:
+      - 9100:9100
+    restart: always
+    deploy:
+      mode: global
 
+  grafana:
+    image: grafana/grafana
+    user: '472'
+    restart: always
+    environment:
+      GF_INSTALL_PLUGINS: 'grafana-clock-panel,grafana-simple-json-datasource'
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
+    ports:
+      - 3000:3000
+    depends_on:
+      - prometheus
 
   cadvisor:
     image: google/cadvisor:v0.33.0

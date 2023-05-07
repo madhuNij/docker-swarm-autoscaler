@@ -7,11 +7,13 @@ metric_stores:
 autoscale_rules:
   - service_name: g10_web
     scale_min: 1
-    scale_max: 10
+    scale_max: 20
     scale_step: 1
     metric_store: monitoring
     #metric_query: scalar(avg(rate(http_requests_total{job="web"}[30s])))
     metric_query: sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_task_name=~'.+'}[30s]))BY(container_label_com_docker_swarm_service_name,instance)*100
     #metric_query: sum(rate(container_cpu_load_average_10s{job="web"}[30s]))*100
-    scale_up_threshold: 300
-    scale_down_threshold: 200
+    scale_up_threshold: 30
+    scale_down_threshold: 20
+
+  #sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name='g10_web'}[5m]))BY(container_label_com_docker_swarm_service_name,instance)*100
