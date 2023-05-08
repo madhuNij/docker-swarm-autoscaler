@@ -8,14 +8,33 @@ volumes:
 
 services:
   # web:
-  #   image: endeepak/simple-web-prometheus
+  #   image: progrium/stress
   #   ports:
   #     - "8080:8080"
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         cpus: '2'
+  #         memory: 128M
+  #       limits:
+  #         cpus: '3'
+
+    # command:
+    #   cpus: '2'
+      # - 'io=1'
+      # - 'vm=2'
+      # - 'vm-bytes=128M'
+      # - 'timeout=10s'
 
   web:
    image: mnijagal/generate_load:latest
    ports:
      - "8080:8080"
+
+  # web:
+  #  image: endeepak/simple-web-prometheus
+  #  ports:
+  #    - "8080:8080"
 
   prometheus:
     image: quay.io/prometheus/prometheus:v2.0.0

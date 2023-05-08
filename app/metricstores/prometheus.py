@@ -12,6 +12,7 @@ class PrometheusMetricStore(object):
         
         resposnse_json = resposnse.json()
         print("Prometheus response:", resposnse_json)
+        #return float(resposnse_json['data']['result'][1])
         for data in resposnse_json['data']['result']:
             if data['metric']['container_label_com_docker_swarm_service_name'] == "g10_web":
                 print("CPU Load of g10_web = ", float(data['value'][1]))
