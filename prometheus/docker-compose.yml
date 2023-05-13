@@ -4,37 +4,20 @@ volumes:
   prometheus_data: {}
   grafana_data: {}
 
-
-
 services:
+  ########## service to generte cpu load and receive http_request ##########
+  web:
+    image: mnijagal/generate_load:latest
+    ports:
+      - "8080:8080"
+
+  ########## service to generate memory usage load ##########
   # web:
-  #   image: progrium/stress
+  #   image: progrium/stress:latest
   #   ports:
   #     - "8080:8080"
-  #   deploy:
-  #     resources:
-  #       reservations:
-  #         cpus: '2'
-  #         memory: 128M
-  #       limits:
-  #         cpus: '3'
+  #   command: [--cpu, "10", --io, "1", --vm, "2", --vm-bytes, "50G", --timeout, "60s"]
 
-    # command:
-    #   cpus: '2'
-      # - 'io=1'
-      # - 'vm=2'
-      # - 'vm-bytes=128M'
-      # - 'timeout=10s'
-
-  web:
-   image: mnijagal/generate_load:latest
-   ports:
-     - "8080:8080"
-
-  # web:
-  #  image: endeepak/simple-web-prometheus
-  #  ports:
-  #    - "8080:8080"
 
   prometheus:
     image: quay.io/prometheus/prometheus:v2.0.0
@@ -101,7 +84,7 @@ services:
 
   autoscaler:
     image: docker-swarm-autoscaler:latest
-    command: "/etc/docker-swarm-autoscaler/autoscaler.yml --log-leve=DEBUG"
+    command: "/etc/docker-swarm-autoscaler/autoscaler.yml --log-level=DEBUG"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     configs:

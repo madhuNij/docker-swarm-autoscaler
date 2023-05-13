@@ -15,7 +15,7 @@ DEFAULT_LOG_LEVEL='info'
 logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Autoscale services in docker swarm based on rules')
+    parser = argparse.ArgumentParser(description='docker_swarm_autoscaler')
     parser.add_argument('config_file', help='Path of the config file')
     parser.add_argument('--log-level', help='Log level', default = DEFAULT_LOG_LEVEL)
     args = parser.parse_args()
